@@ -76,7 +76,7 @@ export interface ProjectBuildOptions {
 export interface LintOptions {
   /**
    * The lint rules to run. Can be the code of a collection of rules like
-   * "polymer-2.0" or an individual rule like "dom-module-invalid-attrs".
+   * "polymer-2" or an individual rule like "dom-module-invalid-attrs".
    */
   rules: string[];
 
@@ -84,7 +84,7 @@ export interface LintOptions {
    * Warnings to ignore. After the rules are run, any warning that matches
    * one of these codes is ignored, project-wide.
    */
-  ignore: string[];
+  ignoreWarnings?: string[];
 }
 
 export interface ProjectOptions {
@@ -132,7 +132,7 @@ export interface ProjectOptions {
   /**
    * Options for the Polymer Linter.
    */
-  lint: LintOptions;
+  lint?: LintOptions;
 }
 
 export class ProjectConfig {
