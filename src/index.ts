@@ -73,6 +73,20 @@ export interface ProjectBuildOptions {
   js?: {minify?: boolean, compile?: boolean};
 }
 
+export interface LintOptions {
+  /**
+   * The lint rules to run. Can be the code of a collection of rules like
+   * "polymer-2.0" or an individual rule like "dom-module-invalid-attrs".
+   */
+  rules: string[];
+
+  /**
+   * Warnings to ignore. After the rules are run, any warning that matches
+   * one of these codes is ignored, project-wide.
+   */
+  ignore: string[];
+}
+
 export interface ProjectOptions {
   /**
    * Path to the root of the project on the filesystem. This can be an absolute
@@ -114,6 +128,11 @@ export interface ProjectOptions {
    * List of build option configurations.
    */
   builds?: ProjectBuildOptions[];
+
+  /**
+   * Options for the Polymer Linter.
+   */
+  lint: LintOptions;
 }
 
 export class ProjectConfig {
