@@ -146,6 +146,7 @@ export class ProjectConfig {
 
   readonly builds: ProjectBuildOptions[];
   readonly allFragments: string[];
+  readonly lint: LintOptions | undefined = undefined;
 
   /**
    * Given an absolute file path to a polymer.json-like ProjectOptions object,
@@ -264,6 +265,10 @@ export class ProjectConfig {
     }
     if (this.allFragments.length === 0) {
       this.allFragments.push(this.entrypoint);
+    }
+
+    if (options.lint) {
+      this.lint = options.lint;
     }
 
     /**
