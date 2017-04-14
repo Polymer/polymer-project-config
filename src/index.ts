@@ -420,16 +420,14 @@ export class ProjectConfig {
         for (const build of this.builds) {
           const buildName = build.name;
           console.assert(
-              buildName, `${validateErrorPrefix
-                         }: all "builds" require a "name" property ` +
-                  `when there are multiple builds defined.`);
-                         console.assert(
-                             !buildNames.has(buildName),
-                             `${validateErrorPrefix
-                         }: "builds" duplicate build name ` +
-                             `"${buildName
-                                 }" found. Build names must be unique.`);
-                                 buildNames.add(buildName);
+              buildName,
+              `${validateErrorPrefix}: all "builds" require ` +
+                  `a "name" property when there are multiple builds defined.`);
+          console.assert(
+              !buildNames.has(buildName),
+              `${validateErrorPrefix}: "builds" duplicate build name ` +
+                  `"${buildName}" found. Build names must be unique.`);
+          buildNames.add(buildName);
         }
       }
     }
