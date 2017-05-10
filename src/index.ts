@@ -83,6 +83,12 @@ export interface LintOptions {
    * one of these codes is ignored, project-wide.
    */
   ignoreWarnings?: string[];
+  
+  /**
+   * Minimum Severity lint warnings to output and trigger failure of the 
+   * command.
+   */
+  minSeverity?: string;
 }
 
 export interface ProjectOptions {
