@@ -5,9 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unreleased
+<!-- ## Unreleased -->
 
 <!-- Add new, unreleased changes here. -->
+
+* `lint`: Add support for `minSeverity` build option that controls the severity of lint warnings to output and trigger failure.
 
 ## [3.0.0] - 2017-05-09
 * Add build preset support.
