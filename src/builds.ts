@@ -98,6 +98,30 @@ export interface ProjectBuildOptions {
     /** Use babel to compile all ES6 JS down to ES5 for older browsers. */
     compile?: boolean
   };
+
+  /**
+   * Browser capabilities required for serving this build. Used by servers that
+   * support differential serving to decide which build to serve to a given
+   * user agent.
+   *
+   * Values include `es2015` and `push`. See canonical list at:
+   * https://github.com/Polymer/prpl-server-node/blob/master/src/capabilities.ts
+   */
+  capabilities?: string[];
+
+  /**
+   * Transform resource references to facilitate serving this build from a
+   * non-root path. Useful for differential serving, where static resources
+   * for each build is served from a sub-directory.
+   *
+   * - Update the entrypoint's <base> tag, if found.
+   * - Prefix Service Worker pre-cached resources.
+   * - Prefix Push Manifest resources.
+   *
+   * If `true`, uses the build `name`, otherwise uses the given string.
+   * Leading/trailing slashes are optional.
+   */
+  base?: true|string;
 }
 
 export const buildPresets = new Map<string, ProjectBuildOptions>([
