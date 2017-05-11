@@ -19,7 +19,8 @@ export interface ProjectBuildOptions {
   name?: string;
 
   /**
-   * A build preset for this build. A build can inherit some base configuration from a named preset.
+   * A build preset for this build. A build can inherit some base configuration
+   * from a named preset.
    */
   preset?: string;
 
@@ -99,62 +100,79 @@ export interface ProjectBuildOptions {
     compile?: boolean
   };
 
-  /**
-   * Browser capabilities required for serving this build. Used by servers that
-   * support differential serving to decide which build to serve to a given
-   * user agent.
-   *
-   * Values include `es2015` and `push`. See canonical list at:
-   * https://github.com/Polymer/prpl-server-node/blob/master/src/capabilities.ts
-   */
-  capabilities?: string[];
+  /** Options relating to the browser that consumes this build. */
+  client?: {
+    /**
+     * Capabilities required for serving this build. Used by servers that
+     * support differential serving to decide which build to serve to a given
+     * user agent.
+     *
+     * Values include `es2015` and `push`. See canonical list at:
+     * https://github.com/Polymer/prpl-server-node/blob/master/src/capabilities.ts
+     */
+    capabilities?: string[];
+  };
 
   /**
-   * Transform resource references to facilitate serving this build from a
-   * non-root path. Useful for differential serving, where static resources
-   * for each build is served from a sub-directory.
-   *
-   * - Update the entrypoint's <base> tag, if found.
-   * - Prefix Service Worker pre-cached resources.
-   * - Prefix Push Manifest resources.
-   *
-   * If `true`, uses the build `name`, otherwise uses the given string.
-   * Leading/trailing slashes are optional.
+   * Options for transforming resource references to facilitate serving this
+   * build from a non-root path. Useful for differential serving, where static
+   * resources for each build are served from sub-directories.
    */
-  base?: true|string;
+  rewritePaths?: {
+    /**
+     * Use this prefix for rewriting. Defaults to the build's `name`.
+     * Leading/trailing slashes are optional.
+     */
+    prefix?: string,
+
+    /** Update the entrypoint's `<base>` tag, if found. */
+    baseTag?: boolean,
+
+    /** Prefix Service Worker pre-cached resources. */
+    serviceWorker?: boolean,
+
+    /* Prefix Push Manifest resources. */
+    pushManifest?: boolean
+  };
 }
 
 export const buildPresets = new Map<string, ProjectBuildOptions>([
-  ['es5-bundled', {
-    name: 'es5-bundled',
-    js: {minify: true, compile: true},
-    css: {minify: true},
-    html: {minify: true},
-    bundle: true,
-    addServiceWorker: true,
-    addPushManifest: true,
-    insertPrefetchLinks: true,
-  }],
-  ['es6-bundled', {
-    name: 'es6-bundled',
-    js: {minify: true, compile: false},
-    css: {minify: true},
-    html: {minify: true},
-    bundle: true,
-    addServiceWorker: true,
-    addPushManifest: true,
-    insertPrefetchLinks: true,
-  }],
-  ['es6-unbundled', {
-    name: 'es6-unbundled',
-    js: {minify: true, compile: false},
-    css: {minify: true},
-    html: {minify: true},
-    bundle: false,
-    addServiceWorker: true,
-    addPushManifest: true,
-    insertPrefetchLinks: true,
-  }],
+  [
+    'es5-bundled', {
+      name : 'es5-bundled',
+      js : {minify : true, compile : true},
+      css : {minify : true},
+      html : {minify : true},
+      bundle : true,
+      addServiceWorker : true,
+      addPushManifest : true,
+      insertPrefetchLinks : true,
+    }
+  ],
+  [
+    'es6-bundled', {
+      name : 'es6-bundled',
+      js : {minify : true, compile : false},
+      css : {minify : true},
+      html : {minify : true},
+      bundle : true,
+      addServiceWorker : true,
+      addPushManifest : true,
+      insertPrefetchLinks : true,
+    }
+  ],
+  [
+    'es6-unbundled', {
+      name : 'es6-unbundled',
+      js : {minify : true, compile : false},
+      css : {minify : true},
+      html : {minify : true},
+      bundle : false,
+      addServiceWorker : true,
+      addPushManifest : true,
+      insertPrefetchLinks : true,
+    }
+  ],
 ]);
 
 export function isValidPreset(presetName: string) {
@@ -183,4 +201,3 @@ export function applyBuildPreset(config: ProjectBuildOptions) {
   mergedConfig.html = Object.assign({}, presetConfig.html, config.html);
   return mergedConfig;
 }
-
