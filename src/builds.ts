@@ -99,7 +99,7 @@ export interface ProjectBuildOptions {
     compile?: boolean
   };
 
-  /** Options for serving this build. */
+  /** Options related to serving this build. */
   serving?: {
     /**
      * Capabilities required for a browser to consume this build. Values
@@ -114,8 +114,8 @@ export interface ProjectBuildOptions {
     browserCapabilities?: string[];
 
     /**
-     * Apply transformations to support serving this build from a non-root
-     * path, such as when doing differential serving of builds based on user
+     * Apply transformations during build to support serving this build from a
+     * non-root path, such as when doing differential serving based on user
      * agent. This works well in conjunction with the convention of using
      * relative URLs for static resources and absolute URLs for application
      * routes.
