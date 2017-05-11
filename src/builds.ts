@@ -99,39 +99,35 @@ export interface ProjectBuildOptions {
     compile?: boolean
   };
 
-  /** Options relating to the browser that consumes this build. */
-  client?: {
+  /** Options for serving this build. */
+  serving?: {
     /**
-     * Capabilities required for serving this build. Used by servers that
-     * support differential serving to decide which build to serve to a given
-     * user agent.
-     *
-     * Values include `es2015` and `push`. See canonical list at:
+     * Capabilities required for a browser to consume this build. Values
+     * include `es2015` and `push`. See canonical list at:
      * https://github.com/Polymer/prpl-server-node/blob/master/src/capabilities.ts
+     *
+     * This field is purely a hint to servers reading this configuration, and
+     * does not affect the build process. A server supporting differential
+     * serving (e.g. prpl-server) can use this field to help decide which build
+     * to serve to a given user agent.
      */
-    capabilities?: string[];
-  };
+    browserCapabilities?: string[];
 
-  /**
-   * Options for transforming resource references to facilitate serving this
-   * build from a non-root path. Useful for differential serving, where static
-   * resources for each build are served from sub-directories.
-   */
-  rewritePaths?: {
     /**
-     * Use this prefix for rewriting. Defaults to the build's `name`.
+     * Apply transformations to support serving this build from a non-root
+     * path, such as when doing differential serving of builds based on user
+     * agent. This works well in conjunction with the convention of using
+     * relative URLs for static resources and absolute URLs for application
+     * routes.
+     *
+     * - Find and update the entrypoint's `<base>` tag.
+     * - Prefix Service Worker pre-cached resources.
+     * - Prefix Push Manifest resources.
+     *
+     * If `true`, use the build `name`. If a `string`, use that value.
      * Leading/trailing slashes are optional.
      */
-    prefix?: string,
-
-    /** Update the entrypoint's `<base>` tag, if found. */
-    baseTag?: boolean,
-
-    /** Prefix Service Worker pre-cached resources. */
-    serviceWorker?: boolean,
-
-    /* Prefix Push Manifest resources. */
-    pushManifest?: boolean
+    basePath?: boolean | string;
   };
 }
 
@@ -194,4 +190,3 @@ export function applyBuildPreset(config: ProjectBuildOptions) {
   mergedConfig.html = Object.assign({}, presetConfig.html, config.html);
   return mergedConfig;
 }
-
