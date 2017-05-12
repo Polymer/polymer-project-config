@@ -109,6 +109,8 @@ export const buildPresets = new Map<string, ProjectBuildOptions>([
     bundle: true,
     addServiceWorker: true,
     addPushManifest: true,
+    // TODO(rictic): change this back to true once we fix
+    // https://github.com/Polymer/polymer-project-config/pull/22
     insertPrefetchLinks: false,
   }],
   ['es6-bundled', {
@@ -119,6 +121,8 @@ export const buildPresets = new Map<string, ProjectBuildOptions>([
     bundle: true,
     addServiceWorker: true,
     addPushManifest: true,
+    // TODO(rictic): change this back to true once we fix
+    // https://github.com/Polymer/polymer-project-config/pull/22
     insertPrefetchLinks: false,
   }],
   ['es6-unbundled', {
