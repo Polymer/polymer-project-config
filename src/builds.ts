@@ -109,7 +109,7 @@ export const buildPresets = new Map<string, ProjectBuildOptions>([
     bundle: true,
     addServiceWorker: true,
     addPushManifest: true,
-    insertPrefetchLinks: true,
+    insertPrefetchLinks: false,
   }],
   ['es6-bundled', {
     name: 'es6-bundled',
@@ -119,7 +119,7 @@ export const buildPresets = new Map<string, ProjectBuildOptions>([
     bundle: true,
     addServiceWorker: true,
     addPushManifest: true,
-    insertPrefetchLinks: true,
+    insertPrefetchLinks: false,
   }],
   ['es6-unbundled', {
     name: 'es6-unbundled',
