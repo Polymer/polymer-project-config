@@ -99,36 +99,33 @@ export interface ProjectBuildOptions {
     compile?: boolean
   };
 
-  /** Options related to serving this build. */
-  serving?: {
-    /**
-     * Capabilities required for a browser to consume this build. Values
-     * include `es2015` and `push`. See canonical list at:
-     * https://github.com/Polymer/prpl-server-node/blob/master/src/capabilities.ts
-     *
-     * This field is purely a hint to servers reading this configuration, and
-     * does not affect the build process. A server supporting differential
-     * serving (e.g. prpl-server) can use this field to help decide which build
-     * to serve to a given user agent.
-     */
-    browserCapabilities?: string[];
+  /**
+   * Capabilities required for a browser to consume this build. Values include
+   * `es2015` and `push`. See canonical list at:
+   * https://github.com/Polymer/prpl-server-node/blob/master/src/capabilities.ts
+   *
+   * This field is purely a hint to servers reading this configuration, and
+   * does not affect the build process. A server supporting differential
+   * serving (e.g. prpl-server) can use this field to help decide which build
+   * to serve to a given user agent.
+   */
+  browserCapabilities?: string[];
 
-    /**
-     * Apply transformations during build to support serving this build from a
-     * non-root path, such as when doing differential serving based on user
-     * agent. This works well in conjunction with the convention of using
-     * relative URLs for static resources and absolute URLs for application
-     * routes.
-     *
-     * - Find and update the entrypoint's `<base>` tag.
-     * - Prefix Service Worker pre-cached resources.
-     * - Prefix Push Manifest resources.
-     *
-     * If `true`, use the build `name`. If a `string`, use that value.
-     * Leading/trailing slashes are optional.
-     */
-    basePath?: boolean | string;
-  };
+  /**
+   * Apply transformations during build to support serving this build from a
+   * non-root path, such as when doing differential serving based on user
+   * agent. This works well in conjunction with the convention of using
+   * relative URLs for static resources and absolute URLs for application
+   * routes.
+   *
+   * - Find and update the entrypoint's `<base>` tag.
+   * - Prefix Service Worker pre-cached resources.
+   * - Prefix Push Manifest resources.
+   *
+   * If `true`, use the build `name`. If a `string`, use that value.
+   * Leading/trailing slashes are optional.
+   */
+  basePath?: boolean | string;
 }
 
 export const buildPresets = new Map<string, ProjectBuildOptions>([
@@ -190,3 +187,4 @@ export function applyBuildPreset(config: ProjectBuildOptions) {
   mergedConfig.html = Object.assign({}, presetConfig.html, config.html);
   return mergedConfig;
 }
+
