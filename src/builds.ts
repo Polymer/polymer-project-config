@@ -80,7 +80,7 @@ export interface ProjectBuildOptions {
    * reduce the number of file requests. This is optimal for sending to clients
    * or serving from servers that are not HTTP/2 compatible.
    */
-  bundle?: boolean;
+  bundle?: boolean | Object;
 
   /** Options for processing HTML. */
   html?: {
