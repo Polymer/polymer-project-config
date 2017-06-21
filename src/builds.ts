@@ -98,7 +98,7 @@ export interface ProjectBuildOptions {
     sourcemaps?: boolean,
 
     /**
-     * Remove of all comments except those tagged '@license', or starting with
+     * Remove all comments except those tagged '@license', or starting with
      * `<!--!` or `<!--#`, when true.
      */
     stripComments?: boolean,
