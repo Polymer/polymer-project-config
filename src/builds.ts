@@ -19,7 +19,8 @@ export interface ProjectBuildOptions {
   name?: string;
 
   /**
-   * A build preset for this build. A build can inherit some base configuration from a named preset.
+   * A build preset for this build. A build can inherit some base configuration
+   * from a named preset.
    */
   preset?: string;
 
@@ -65,6 +66,9 @@ export interface ProjectBuildOptions {
    * are prefetched immediately. Add dependency prefetching by inserting `<link
    * rel="prefetch">` tags into entrypoint and `<link rel="import">` tags into
    * fragments and shell for all dependencies.
+   *
+   * Note this option may trigger duplicate requests. See
+   * https://github.com/Polymer/polymer-build/issues/239 for details.
    */
   insertPrefetchLinks?: boolean;
 
@@ -76,7 +80,29 @@ export interface ProjectBuildOptions {
    * reduce the number of file requests. This is optimal for sending to clients
    * or serving from servers that are not HTTP/2 compatible.
    */
-  bundle?: boolean;
+  bundle?: boolean|{
+
+    /** URLs of files and/or folders that should not be inlined. */
+    excludes?: string[],
+
+    /** Inline external CSS file contents into <style> tags. */
+    inlineCss?: boolean,
+
+    /** Inline external Javascript file contents into <script> tags. */
+    inlineScripts?: boolean,
+
+    /** Rewrite element attributes inside of templates when inlining html. */
+    rewriteUrlsInTemplates?: boolean,
+
+    /** Create identity source maps for inline scripts. */
+    sourcemaps?: boolean,
+
+    /**
+     * Remove all comments except those tagged '@license', or starting with
+     * `<!--!` or `<!--#`, when true.
+     */
+    stripComments?: boolean,
+  };
 
   /** Options for processing HTML. */
   html?: {
@@ -98,39 +124,71 @@ export interface ProjectBuildOptions {
     /** Use babel to compile all ES6 JS down to ES5 for older browsers. */
     compile?: boolean
   };
+
+  /**
+   * Capabilities required for a browser to consume this build. Values include
+   * `es2015` and `push`. See canonical list at:
+   * https://github.com/Polymer/prpl-server-node/blob/master/src/capabilities.ts
+   *
+   * This field is purely a hint to servers reading this configuration, and
+   * does not affect the build process. A server supporting differential
+   * serving (e.g. prpl-server) can use this field to help decide which build
+   * to serve to a given user agent.
+   */
+  browserCapabilities?: string[];
+
+  /**
+   * Update the entrypoint's `<base>` tag, to support serving this build from a
+   * non-root path, such as when doing differential serving based on user
+   * agent. Requires that a `<base>` tag already exists. This works well in
+   * conjunction with the convention of using relative URLs for static
+   * resources and absolute URLs for application routes.
+   *
+   * If `true`, use the build `name`. If a `string`, use that value.
+   * Leading/trailing slashes are optional.
+   */
+  basePath?: boolean|string;
 }
 
 export const buildPresets = new Map<string, ProjectBuildOptions>([
-  ['es5-bundled', {
-    name: 'es5-bundled',
-    js: {minify: true, compile: true},
-    css: {minify: true},
-    html: {minify: true},
-    bundle: true,
-    addServiceWorker: true,
-    addPushManifest: true,
-    insertPrefetchLinks: true,
-  }],
-  ['es6-bundled', {
-    name: 'es6-bundled',
-    js: {minify: true, compile: false},
-    css: {minify: true},
-    html: {minify: true},
-    bundle: true,
-    addServiceWorker: true,
-    addPushManifest: true,
-    insertPrefetchLinks: true,
-  }],
-  ['es6-unbundled', {
-    name: 'es6-unbundled',
-    js: {minify: true, compile: false},
-    css: {minify: true},
-    html: {minify: true},
-    bundle: false,
-    addServiceWorker: true,
-    addPushManifest: true,
-    insertPrefetchLinks: true,
-  }],
+  [
+    'es5-bundled',
+    {
+      name: 'es5-bundled',
+      js: {minify: true, compile: true},
+      css: {minify: true},
+      html: {minify: true},
+      bundle: true,
+      addServiceWorker: true,
+      addPushManifest: true,
+    }
+  ],
+  [
+    'es6-bundled',
+    {
+      name: 'es6-bundled',
+      browserCapabilities: ['es2015'],
+      js: {minify: true, compile: false},
+      css: {minify: true},
+      html: {minify: true},
+      bundle: true,
+      addServiceWorker: true,
+      addPushManifest: true,
+    }
+  ],
+  [
+    'es6-unbundled',
+    {
+      name: 'es6-unbundled',
+      browserCapabilities: ['es2015', 'push'],
+      js: {minify: true, compile: false},
+      css: {minify: true},
+      html: {minify: true},
+      bundle: false,
+      addServiceWorker: true,
+      addPushManifest: true,
+    }
+  ],
 ]);
 
 export function isValidPreset(presetName: string) {
@@ -147,7 +205,7 @@ export function applyBuildPreset(config: ProjectBuildOptions) {
     return config;
   }
 
-  const presetConfig = buildPresets.get(presetName);
+  const presetConfig = buildPresets.get(presetName) || {};
   const mergedConfig = Object.assign({}, presetConfig, config);
   // Object.assign is shallow, so we need to make sure we properly merge these
   // deep options as well.
@@ -159,4 +217,3 @@ export function applyBuildPreset(config: ProjectBuildOptions) {
   mergedConfig.html = Object.assign({}, presetConfig.html, config.html);
   return mergedConfig;
 }
-
