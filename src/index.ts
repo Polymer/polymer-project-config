@@ -142,6 +142,11 @@ export interface ProjectOptions {
    * Options for the Polymer Linter.
    */
   lint?: LintOptions;
+
+  /**
+   * File to write bundle manifest to.
+   */
+  bundleManifest?: string;
 }
 
 export class ProjectConfig {
@@ -151,6 +156,7 @@ export class ProjectConfig {
   readonly fragments: string[];
   readonly sources: string[];
   readonly extraDependencies: string[];
+  readonly bundleManifest: string;
 
   readonly builds: ProjectBuildOptions[];
   readonly allFragments: string[];
@@ -287,6 +293,12 @@ export class ProjectConfig {
       if (Array.isArray(this.builds)) {
         this.builds = this.builds.map(applyBuildPreset);
       }
+    }
+    /**
+     * bundleManifest
+     */
+    if (options.bundleManifest) {
+      this.bundleManifest = options.bundleManifest;
     }
   }
 

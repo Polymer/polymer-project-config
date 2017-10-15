@@ -148,6 +148,9 @@ export interface ProjectBuildOptions {
    * Leading/trailing slashes are optional.
    */
   basePath?: boolean|string;
+
+  /** File to write bundle manifest to. */
+  bundleManifest?: string,
 }
 
 export const buildPresets = new Map<string, ProjectBuildOptions>([
