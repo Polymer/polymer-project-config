@@ -143,6 +143,11 @@ export interface ProjectOptions {
   shell?: string;
 
   /**
+   * The path relative to `root` of the component.
+   */
+  componentDir?: string;
+
+  /**
    * The path relative to `root` of the lazily loaded fragments. Usually the
    * pages of an app or other bundles of on-demand resources.
    */
@@ -175,6 +180,7 @@ export class ProjectConfig {
   readonly root: string;
   readonly entrypoint: string;
   readonly shell?: string;
+  readonly componentDir?: string;
   readonly fragments: string[];
   readonly sources: string[];
   readonly extraDependencies: string[];
@@ -285,6 +291,13 @@ export class ProjectConfig {
      */
     if (options.shell) {
       this.shell = path.resolve(this.root, options.shell);
+    }
+
+    /**
+     * componentDir
+     */
+    if (options.componentDir) {
+      this.componentDir = options.componentDir;
     }
 
     /**
