@@ -79,6 +79,14 @@ function fixDeprecatedOptions(options: any): ProjectOptions {
     options.extraDependencies =
         options.extraDependencies || options.includeDependencies;
   }
+  // TODO(rictic): two releases after v3.5.0, start warning about
+  //     options.lint.ignoreWarnings. For now we'll start by just
+  //     making them always point to the same object.
+  if (options.lint && options.lint.warningsToIgnore) {
+    options.lint.ignoreWarnings = options.lint.warningsToIgnore;
+  } else if (options.lint && options.lint.ignoreWarnings) {
+    options.lint.warningsToIgnore = options.lint.ignoreWarnings;
+  }
   return options;
 }
 
@@ -93,7 +101,26 @@ export interface LintOptions {
    * Warnings to ignore. After the rules are run, any warning that matches
    * one of these codes is ignored, project-wide.
    */
+  warningsToIgnore?: string[];
+
+  /**
+   * Deprecated way of spelling the `warningsToIgnore` lint option.
+   *
+   * Used only if `warningsToIgnore` is not specified.
+   */
   ignoreWarnings?: string[];
+
+  /**
+   * An array of file globs to never report warnings for.
+   *
+   * The globs follow [minimatch] syntax, and any file that matches any
+   * of the listed globs will never show any linter warnings. This will
+   * typically not have a performance benefit, as the file will usually
+   * still need to be analyzed.
+   *
+   * [minimatch]: https://github.com/isaacs/minimatch
+   */
+  filesToIgnore?: string[];
 }
 
 export interface ProjectOptions {
@@ -161,21 +188,14 @@ export class ProjectConfig {
    * read that file. If no file exists, null is returned. If the file exists
    * but there is a problem reading or parsing it, throw an exception.
    *
-   * TODO: make this method and the one below async.
+   * TODO: in the next major version we should make this method and the one
+   *     below async.
    */
   static loadOptionsFromFile(filepath: string): ProjectOptions|null {
     try {
       const configContent = fs.readFileSync(filepath, 'utf-8');
       const contents = JSON.parse(configContent);
-      const validator = new jsonschema.Validator();
-      const result = validator.validate(contents, getSchema());
-      if (result.throwError) {
-        throw result.throwError;
-      }
-      if (result.errors.length > 0) {
-        throw result.errors[0];
-      }
-      return contents;
+      return this.validateOptions(contents);
     } catch (error) {
       // swallow "not found" errors because they are so common / expected
       if (error && error.code === 'ENOENT') {
@@ -192,11 +212,46 @@ export class ProjectConfig {
    * return a new ProjectConfig instance created with those options.
    */
   static loadConfigFromFile(filepath: string): ProjectConfig|null {
-    let configParsed = ProjectConfig.loadOptionsFromFile(filepath);
+    const configParsed = ProjectConfig.loadOptionsFromFile(filepath);
     if (!configParsed) {
       return null;
     }
     return new ProjectConfig(configParsed);
+  }
+
+  /**
+   * Returns the given configJsonObject if it is a valid ProjectOptions object,
+   * otherwise throws an informative error message.
+   */
+  static validateOptions(configJsonObject: {}): ProjectOptions {
+    const validator = new jsonschema.Validator();
+    const result = validator.validate(configJsonObject, getSchema());
+    if (result.errors.length > 0) {
+      const error = result.errors[0]!;
+      if (!error.property && !error.message) {
+        throw error;
+      }
+      let propertyName = error.property;
+      if (propertyName.startsWith('instance.')) {
+        propertyName = propertyName.slice(9);
+      }
+      throw new Error(`Property '${propertyName}' ${error.message}`);
+    }
+    return configJsonObject;
+  }
+
+  /**
+   * Returns a new ProjectConfig from the given JSON object if it's valid.
+   *
+   * TODO(rictic): For the next major version we should mark the constructor
+   * private, or perhaps make it validating. Also, we should standardize the
+   * naming scheme across the static methods on this class.
+   *
+   * Throws if the given JSON object is an invalid ProjectOptions.
+   */
+  static validateAndCreate(configJsonObject: {}) {
+    const options = this.validateOptions(configJsonObject);
+    return new this(options);
   }
 
   /**
@@ -378,6 +433,11 @@ export class ProjectConfig {
    * will be relative to root.
    */
   toJSON(): string {
+    let lintObj = undefined;
+    if (this.lint) {
+      lintObj = {...this.lint};
+      delete lintObj.ignoreWarnings;
+    }
     const obj = {
       entrypoint: globRelative(this.root, this.entrypoint),
       shell: this.shell ? globRelative(this.root, this.shell) : undefined,
@@ -391,7 +451,7 @@ export class ProjectConfig {
         return globRelative(this.root, absolutePath);
       }),
       builds: this.builds,
-      lint: this.lint,
+      lint: lintObj,
     };
     return JSON.stringify(obj, null, 2);
   }
