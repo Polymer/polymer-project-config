@@ -593,7 +593,7 @@ suite('Project Config', () => {
   suite('json validation', () => {
     test('throws good error messages', () => {
       try {
-        ProjectConfig.validateAndCreate({ lint: [] });
+        ProjectConfig.validateAndCreate({lint: []});
       } catch (e) {
         assert.deepEqual(
             e.message, `Property 'lint' is not of a type(s) object`);
@@ -655,7 +655,7 @@ suite('Project Config', () => {
         lint: {
           rules: ['some-rule'],
           warningsToIgnore: ['some-warning'],
-          filesToIgnore: ["some .* glob"]
+          filesToIgnore: ['some .* glob']
         }
       });
     });
