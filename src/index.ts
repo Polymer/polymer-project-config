@@ -166,6 +166,11 @@ export interface ProjectOptions {
   builds?: ProjectBuildOptions[];
 
   /**
+   * Tag all build with `basePath: true`.
+   */
+  autoBasePath?: boolean;
+
+  /**
    * Options for the Polymer Linter.
    */
   lint?: LintOptions;
@@ -180,6 +185,7 @@ export class ProjectConfig {
   readonly extraDependencies: string[];
 
   readonly builds: ProjectBuildOptions[];
+  readonly autoBasePath: boolean;
   readonly allFragments: string[];
   readonly lint: LintOptions|undefined = undefined;
 
@@ -343,6 +349,13 @@ export class ProjectConfig {
         this.builds = this.builds.map(applyBuildPreset);
       }
     }
+
+    /**
+     * autoBasePath
+     */
+    if (options.autoBasePath) {
+      this.autoBasePath = options.autoBasePath;
+    }
   }
 
   isFragment(filepath: string): boolean {
@@ -451,6 +464,7 @@ export class ProjectConfig {
         return globRelative(this.root, absolutePath);
       }),
       builds: this.builds,
+      autoBasePath: this.autoBasePath,
       lint: lintObj,
     };
     return JSON.stringify(obj, null, 2);
