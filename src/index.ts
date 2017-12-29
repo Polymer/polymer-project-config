@@ -355,6 +355,12 @@ export class ProjectConfig {
      */
     if (options.autoBasePath) {
       this.autoBasePath = options.autoBasePath;
+      if (Array.isArray(this.builds)) {
+        this.builds = this.builds.map((build: ProjectBuildOptions) => {
+          build.basePath = true;
+          return build;
+        });
+      }
     }
   }
 
