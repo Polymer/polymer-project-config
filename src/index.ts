@@ -166,7 +166,7 @@ export interface ProjectOptions {
   builds?: ProjectBuildOptions[];
 
   /**
-   * Tag all build with `basePath: true`.
+   * Set `basePath: true` on all builds. See that option for more details.
    */
   autoBasePath?: boolean;
 
