@@ -174,6 +174,18 @@ export interface ProjectOptions {
    * Options for the Polymer Linter.
    */
   lint?: LintOptions;
+
+  /**
+   * Sets other options' defaults to NPM-appropriate values:
+   *
+   *   - 'componentDir': 'node_modules/'
+   */
+  npm?: boolean;
+
+  /**
+   * The directory containing this project's dependencies.
+   */
+  componentDir?: string;
 }
 
 export class ProjectConfig {
@@ -183,6 +195,7 @@ export class ProjectConfig {
   readonly fragments: string[];
   readonly sources: string[];
   readonly extraDependencies: string[];
+  readonly componentDir?: string;
 
   readonly builds: ProjectBuildOptions[];
   readonly autoBasePath: boolean;
@@ -268,6 +281,12 @@ export class ProjectConfig {
    */
   constructor(options: ProjectOptions) {
     options = (options) ? fixDeprecatedOptions(options) : {};
+
+    // Set defaults for all NPM related options.
+    if (options.npm) {
+      this.componentDir = "node_modules/";
+    }
+
     /**
      * root
      */
@@ -359,6 +378,13 @@ export class ProjectConfig {
       for (const build of this.builds || []) {
         build.basePath = true;
       }
+    }
+
+    /**
+     * componentDir
+     */
+    if (options.componentDir) {
+      this.componentDir = options.componentDir;
     }
   }
 
