@@ -36,6 +36,7 @@ suite('Project Config', () => {
             path.resolve(absoluteRoot, 'index.html'),
           ],
           lint: undefined,
+          npm: undefined,
         });
       });
 
@@ -58,6 +59,7 @@ suite('Project Config', () => {
                 path.resolve(absoluteRoot, 'index.html'),
               ],
               lint: undefined,
+              npm: undefined,
             });
           });
 
@@ -79,6 +81,7 @@ suite('Project Config', () => {
             path.resolve(absoluteRoot, 'foo.html'),
           ],
           lint: undefined,
+          npm: undefined,
         });
       });
 
@@ -99,6 +102,7 @@ suite('Project Config', () => {
             path.resolve('foo.html')
           ],
           lint: undefined,
+          npm: undefined,
         });
       });
 
@@ -125,6 +129,7 @@ suite('Project Config', () => {
             path.resolve('bar.html'),
           ],
           lint: undefined,
+          npm: undefined,
         });
       });
 
@@ -147,6 +152,7 @@ suite('Project Config', () => {
             path.resolve(absoluteRoot, 'index.html'),
           ],
           lint: undefined,
+          npm: undefined,
         });
       });
 
@@ -178,6 +184,7 @@ suite('Project Config', () => {
             path.resolve(absoluteRoot, 'index.html'),
           ],
           lint: undefined,
+          npm: undefined,
         });
       });
 
@@ -212,6 +219,7 @@ suite('Project Config', () => {
                 path.resolve('bar.html'),
               ],
               lint: undefined,
+              npm: undefined,
             });
           });
 
@@ -266,6 +274,7 @@ suite('Project Config', () => {
         });
         config.validate();
 
+        assert.equal(config.npm, true);
         assert.equal(config.componentDir, 'node_modules/');
       });
 
@@ -276,6 +285,7 @@ suite('Project Config', () => {
         });
         config.validate();
 
+        assert.equal(config.npm, true);
         assert.equal(config.componentDir, '../some_other_dir/over_here/');
       });
     });
@@ -598,6 +608,7 @@ suite('Project Config', () => {
           path.resolve(absoluteRoot, 'bar.html'),
         ],
         lint: undefined,
+        npm: undefined,
       });
     });
 

@@ -196,6 +196,7 @@ export class ProjectConfig {
   readonly sources: string[];
   readonly extraDependencies: string[];
   readonly componentDir?: string;
+  readonly npm?: boolean;
 
   readonly builds: ProjectBuildOptions[];
   readonly autoBasePath: boolean;
@@ -282,8 +283,13 @@ export class ProjectConfig {
   constructor(options: ProjectOptions) {
     options = (options) ? fixDeprecatedOptions(options) : {};
 
+    /**
+     * npm
+     */
+    this.npm = options.npm;
+
     // Set defaults for all NPM related options.
-    if (options.npm) {
+    if (this.npm) {
       this.componentDir = "node_modules/";
     }
 
