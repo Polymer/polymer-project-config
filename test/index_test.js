@@ -37,6 +37,8 @@ suite('Project Config', () => {
           ],
           lint: undefined,
           npm: undefined,
+          host: undefined,
+          moduleResolution: undefined,
         });
       });
 
@@ -60,6 +62,8 @@ suite('Project Config', () => {
               ],
               lint: undefined,
               npm: undefined,
+              host: undefined,
+              moduleResolution: undefined,
             });
           });
 
@@ -82,6 +86,8 @@ suite('Project Config', () => {
           ],
           lint: undefined,
           npm: undefined,
+          host: undefined,
+          moduleResolution: undefined,
         });
       });
 
@@ -103,6 +109,8 @@ suite('Project Config', () => {
           ],
           lint: undefined,
           npm: undefined,
+          host: undefined,
+          moduleResolution: undefined,
         });
       });
 
@@ -130,6 +138,8 @@ suite('Project Config', () => {
           ],
           lint: undefined,
           npm: undefined,
+          host: undefined,
+          moduleResolution: undefined,
         });
       });
 
@@ -153,6 +163,8 @@ suite('Project Config', () => {
           ],
           lint: undefined,
           npm: undefined,
+          host: undefined,
+          moduleResolution: undefined,
         });
       });
 
@@ -185,6 +197,8 @@ suite('Project Config', () => {
           ],
           lint: undefined,
           npm: undefined,
+          host: undefined,
+          moduleResolution: undefined,
         });
       });
 
@@ -220,6 +234,8 @@ suite('Project Config', () => {
               ],
               lint: undefined,
               npm: undefined,
+              host: undefined,
+              moduleResolution: undefined,
             });
           });
 
@@ -609,6 +625,8 @@ suite('Project Config', () => {
         ],
         lint: undefined,
         npm: undefined,
+        host: undefined,
+        moduleResolution: undefined,
       });
     });
 
@@ -702,7 +720,7 @@ suite('Project Config', () => {
                   'js/unminifiable.js',
                   'js/already-minified.js'
                 ]
-              }, 
+              },
               compile: {
                 exclude: [
                   'js/breaks-when-compiled.js',

@@ -18,6 +18,8 @@ import * as path from 'path';
 import * as logging from 'plylog';
 import {applyBuildPreset, isValidPreset, ProjectBuildOptions} from './builds';
 import minimatchAll = require('minimatch-all');
+import {FSUrlLoader, PackageUrlResolver, Analyzer, WarningFilter, Severity} from 'polymer-analyzer';
+import {Options as WarningFilterOptions} from 'polymer-analyzer/lib/warning/warning-filter';
 
 export {ProjectBuildOptions, applyBuildPreset} from './builds';
 
@@ -186,6 +188,30 @@ export interface ProjectOptions {
    * The directory containing this project's dependencies.
    */
   componentDir?: string;
+
+  /**
+   * URLs that resolve to this host will be resolved as files in
+   * `this.root`.
+   *
+   * e.g. this could be `my-domain.example.com` or
+   * `my-other-domain.example.com:8080` and we would resolve urls like
+   * `https://my-domain.example.com/foo/bar` to `${root}/foo/bar`
+   */
+  host?: string;
+
+  /**
+   * If this is given as 'node', then we will attempt to use the node module
+   * resolution algorithm when resolving javascript module imports.
+   *
+   * This allows using bare module specifiers in your imports, like:
+   *
+   *     import {PolymerElement} from '@polymer/polymer';
+   *
+   * Rather than needing to specify relative paths like:
+   *
+   *     import {PolymerElement} from './node_modules/@polymer/polymer';
+   */
+  moduleResolution?: 'node'|undefined;
 }
 
 export class ProjectConfig {
@@ -202,6 +228,16 @@ export class ProjectConfig {
   readonly autoBasePath: boolean;
   readonly allFragments: string[];
   readonly lint: LintOptions|undefined = undefined;
+  /**
+   * URLs that resolve to this host will be resolved as files in
+   * `this.root`.
+   *
+   * e.g. this could be `my-domain.example.com` or
+   * `my-other-domain.example.com:8080` and we would resolve urls like
+   * `https://my-domain.example.com/foo/bar` to `${root}/foo/bar`
+   */
+  readonly host: string|undefined;
+  readonly moduleResolution: 'node'|undefined;
 
   /**
    * Given an absolute file path to a polymer.json-like ProjectOptions object,
@@ -290,7 +326,7 @@ export class ProjectConfig {
 
     // Set defaults for all NPM related options.
     if (this.npm) {
-      this.componentDir = "node_modules/";
+      this.componentDir = 'node_modules/';
     }
 
     /**
@@ -392,6 +428,33 @@ export class ProjectConfig {
     if (options.componentDir) {
       this.componentDir = options.componentDir;
     }
+
+    this.host = options.host;
+    this.moduleResolution = options.moduleResolution;
+  }
+
+  async createConfiguredAnalyzer() {
+    const urlLoader = new FSUrlLoader(this.root);
+    const urlResolver = new PackageUrlResolver({
+      componentDir: this.componentDir,
+      packageDir: this.root,
+      host: this.host,
+    });
+    const analyzer = new Analyzer(
+        {urlLoader, urlResolver, moduleResolution: this.moduleResolution});
+
+    const filterOptions:
+        WarningFilterOptions = {minimumSeverity: Severity.INFO};
+    if (this.lint) {
+      filterOptions.filesToIgnore = this.lint.filesToIgnore;
+      if (this.lint.warningsToIgnore) {
+        filterOptions.warningCodesToIgnore =
+            new Set(this.lint.warningsToIgnore);
+      }
+    }
+    const warningFilter = new WarningFilter(filterOptions);
+
+    return {urlLoader, urlResolver, analyzer, warningFilter};
   }
 
   isFragment(filepath: string): boolean {
@@ -487,7 +550,7 @@ export class ProjectConfig {
       lintObj = {...this.lint};
       delete lintObj.ignoreWarnings;
     }
-    const obj = {
+    const obj: ProjectOptions = {
       entrypoint: globRelative(this.root, this.entrypoint),
       shell: this.shell ? globRelative(this.root, this.shell) : undefined,
       fragments: this.fragments.map((absolutePath) => {
@@ -502,7 +565,15 @@ export class ProjectConfig {
       builds: this.builds,
       autoBasePath: this.autoBasePath,
       lint: lintObj,
+
+      moduleResolution: this.moduleResolution,
+      host: this.host,
+      npm: this.npm,
     };
+    // TODO: next breaking change we should remove this stringify.
+    //     The contract of toJSON is that you return the object that you
+    //     want stringified. So a user can just call JSON.stringify(config)
+    //     rather than calling config.toJSON() directly.
     return JSON.stringify(obj, null, 2);
   }
 }
