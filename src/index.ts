@@ -428,6 +428,17 @@ export class ProjectConfig {
     if (options.componentDir) {
       this.componentDir = options.componentDir;
     }
+    if (this.componentDir === undefined) {
+      try {
+        const bowerRc: {directory?: string} = JSON.parse(
+            fs.readFileSync(path.join(this.root, '.bowerrc'), 'utf-8'));
+        if (typeof bowerRc.directory === 'string') {
+          this.componentDir = path.join(this.root, bowerRc.directory);
+        }
+      } catch {
+        // don't care
+      }
+    }
 
     this.host = options.host;
     this.moduleResolution = options.moduleResolution;
