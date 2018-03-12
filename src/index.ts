@@ -186,6 +186,15 @@ export interface ProjectOptions {
    * The directory containing this project's dependencies.
    */
   componentDir?: string;
+
+  /**
+   * Algorithm to use for resolving module specifiers in import and export
+   * statements when rewriting them to be web-compatible. Valid values are:
+   *
+   * "none": Disable module specifier rewriting. This is the default default.
+   * "node": uses Node.js resolution to find modules.
+   */
+  moduleResolution?: 'none'|'node';
 }
 
 export class ProjectConfig {
@@ -197,6 +206,7 @@ export class ProjectConfig {
   readonly extraDependencies: string[];
   readonly componentDir?: string;
   readonly npm?: boolean;
+  readonly moduleResolution?: 'none'|'node';
 
   readonly builds: ProjectBuildOptions[];
   readonly autoBasePath: boolean;
@@ -290,8 +300,13 @@ export class ProjectConfig {
 
     // Set defaults for all NPM related options.
     if (this.npm) {
-      this.componentDir = "node_modules/";
+      this.componentDir = 'node_modules/';
     }
+
+    /**
+     * moduleResolution
+     */
+    this.moduleResolution = options.moduleResolution || 'none';
 
     /**
      * root
