@@ -289,6 +289,11 @@ export class ProjectConfig {
     return new this(options);
   }
 
+  /**
+   * Given a project directory, return an Analyzer (and related objects) with
+   * configuration inferred from polymer.json (and possibly other config files
+   * that we find and interpret).
+   */
   static async initializeAnalyzerFromDirectory(dirname: string) {
     const config =
         this.loadConfigFromFile(path.join(dirname, 'polymer.json')) ||
@@ -421,6 +426,10 @@ export class ProjectConfig {
     }
   }
 
+  /**
+   * Get an analyzer (and other related objects) with configuration determined
+   * by this ProjectConfig.
+   */
   async initializeAnalyzer() {
     const urlLoader = new FsUrlLoader(this.root);
     const urlResolver = new PackageUrlResolver(
@@ -576,6 +585,10 @@ const getSchema: () => jsonschema.Schema = (() => {
 })();
 
 
+/**
+ * Module resolution in ProjectConfig is different than the same-named parameter
+ * in the analyzer. So we need to convert between the two.
+ */
 function convertModuleResolution(moduleResolution: 'node'|'none'): 'node'|
     undefined {
   switch (moduleResolution) {
